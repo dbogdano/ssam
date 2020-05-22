@@ -99,7 +99,7 @@ def run_sctransform(data, **kwargs):
         ifn, ofn, pfn, rfn = [os.path.join(tmpdirname, e) for e in ["in.feather", "out.feather", "fit_params.feather", "script.R"]]
         df = pd.DataFrame(data, columns=[str(e) for e in range(data.shape[1])])
         df.to_feather(ifn)
-        rcmd = 'library(feather); library(sctransform); mat <- t(as.matrix(read_feather("{0}"))); colnames(mat) <- 1:ncol(mat); res <- sctransform::vst(mat{1}); write_feather(as.data.frame(t(res$y)), "{2}"); write_feather(as.data.frame(res$model_pars_fit), "{3}");'.format(ifn, vst_opt_str, ofn, pfn)
+        rcmd = 'library(arrow); library(sctransform); mat <- t(as.matrix(arrow::read_feather("{0}"))); colnames(mat) <- 1:ncol(mat); res <- sctransform::vst(mat{1}); write_feather(as.data.frame(t(res$y)), "{2}"); write_feather(as.data.frame(res$model_pars_fit), "{3}");'.format(ifn, vst_opt_str, ofn, pfn)
         rcmd = rcmd.replace('\\', '\\\\')
         with open(rfn, "w") as f:
             f.write(rcmd)
