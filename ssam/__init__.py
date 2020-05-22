@@ -36,6 +36,9 @@ from scipy.ndimage import zoom
 
 from .utils import corr, calc_ctmap, calc_corrmap, flood_fill, calc_kde
 
+import feather
+
+
 def _fast_gaussian_kde(args):
     # TODO: 1) support sampling distance
     #       2) support other kernels
@@ -104,7 +107,7 @@ def run_sctransform(data, **kwargs):
         with open(rfn, "w") as f:
             f.write(rcmd)
         subprocess.check_output("Rscript " + rfn, shell=True)
-        return pd.read_feather(ofn), pd.read_feather(pfn)
+        return feather.read_dataframe(ofn), feather.read_dataframe(pfn)
 
 class SSAMDataset(object):
     """
