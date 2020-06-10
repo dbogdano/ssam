@@ -36,7 +36,7 @@ from scipy.ndimage import zoom
 
 from .utils import corr, calc_ctmap, calc_corrmap, flood_fill, calc_kde
 
-import feather
+import feather-format
 
 
 def _fast_gaussian_kde(args):
