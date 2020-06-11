@@ -99,15 +99,15 @@ def run_sctransform(data, **kwargs):
     else:
         vst_opt_str = ', ' + ', '.join(vst_options)
     with TemporaryDirectory() as tmpdirname:
-        ifn, ofn, pfn, rfn = [os.path.join(tmpdirname, e) for e in ["in.feather", "out.feather", "fit_params.feather", "script.R"]]
+        ifn, ofn, pfn, rfn = [os.path.join(tmpdirname, e) for e in ["in.csv", "out.csv", "fit_params.csv", "script.R"]]
         df = pd.DataFrame(data, columns=[str(e) for e in range(data.shape[1])])
-        df.to_feather(ifn)
-        rcmd = 'library(arrow); library(sctransform); mat <- t(as.matrix(arrow::read_feather("{0}"))); colnames(mat) <- 1:ncol(mat); res <- sctransform::vst(mat{1}); write_feather(as.data.frame(t(res$y)), "{2}"); write_feather(as.data.frame(res$model_pars_fit), "{3}");'.format(ifn, vst_opt_str, ofn, pfn)
+        df.to_csv(ifn)
+        rcmd = 'library(sctransform); mat <- t(as.matrix(read.csv("{0}"))); colnames(mat) <- 1:ncol(mat); res <- sctransform::vst(mat{1}); write.csv(as.data.frame(t(res$y)), "{2}"); write.csv(as.data.frame(res$model_pars_fit), "{3}");'.format(ifn, vst_opt_str, ofn, pfn)
         rcmd = rcmd.replace('\\', '\\\\')
         with open(rfn, "w") as f:
             f.write(rcmd)
         subprocess.check_output("Rscript " + rfn, shell=True)
-        return feather.read_dataframe(ofn), feather.read_dataframe(pfn)
+        return pd.read_csv(ofn,index_col=0), pd.read_csv(pfn,index_col=0)
 
 class SSAMDataset(object):
     """
